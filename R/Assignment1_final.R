@@ -24,24 +24,21 @@ library(Biostrings)
 # + scale_color/fill_viridis_c/d()
 theme_set(theme_light())
 
+## Adhithya Dhivakar changed repeated steps into functions (load_te_data, filter_dense_te).
 
 ## Preparing CSV files ----
-# Download T. nativa into script and create object 
-df_te_nat = read.csv("../data/GCA_001447565.2.csv")
+# Function to load a RepeatMasker CSV and fix the bracketed qry_left / in_repeat_end columns
+load_te_data = function(path) {
+  df = read.csv(path)
+  df = df |>
+    mutate(qry_left2 = as.numeric(str_replace_all(qry_left, "\\(|\\)", "")), .after = qry_left) |>
+    mutate(in_repeat_end2 = as.numeric(str_replace_all(in_repeat_end, "\\(|\\)", "")), .after = in_repeat_end)
+  return(df)
+}
 
-# Download T. spiralis into script and create object 
-df_trich_te = read.csv("../Data/GCA_001447595.1.csv")
-
-
-#fixing the issue with qry_left and in_repeat_end columns for Nativa:
-df_te_nat = df_te_nat |>
-  mutate(qry_left2 = as.numeric(str_replace_all(qry_left, "\\(|\\)", "")), .after = qry_left) |>
-  mutate(in_repeat_end2 = as.numeric(str_replace_all(in_repeat_end, "\\(|\\)", "")), .after = in_repeat_end)
-
-#fixing the issue with qry_left and in_repeat_end columns for Spiralis:
-df_trich_te = df_trich_te |>
-  mutate(qry_left2 = as.numeric(str_replace_all(qry_left, "\\(|\\)", "")), .after = qry_left) |>
-  mutate(in_repeat_end2 = as.numeric(str_replace_all(in_repeat_end, "\\(|\\)", "")), .after = in_repeat_end)
+# Original (unfiltered) tables for both species
+df_te_nat_org   = load_te_data("../data/GCA_001447565.2.csv")
+df_trich_te_org = load_te_data("../data/GCA_001447595.1.csv")
 
 
 ## Removing non-TE elements and classifying matching classes into either NA transposons or retrotransposons----
