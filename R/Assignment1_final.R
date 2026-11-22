@@ -24,7 +24,6 @@ library(Biostrings)
 # + scale_color/fill_viridis_c/d()
 theme_set(theme_light())
 
-## Adhithya Dhivakar changed repeated steps into functions (load_te_data, filter_dense_te).
 
 ## Preparing CSV files ----
 # Function to load a RepeatMasker CSV and fix the bracketed qry_left / in_repeat_end columns
@@ -43,19 +42,8 @@ df_trich_te_org = load_te_data("../data/GCA_001447595.1.csv")
 
 ## Removing non-TE elements and classifying matching classes into either NA transposons or retrotransposons----
 
-# List of non-TE elements for nativa
-ls_no_te_nat = c("Simple_repeat", "simple_repeat", "Low_complexity", "Satellite", "rRNA", "snRNA", "ARTEFACT", "Unknown")
-ls_no_te_nat
-
-# List of non-TE elements for spiralis
-ls_no_te_trich = c("Simple_repeat", "simple_repeat", "Low_complexity", "Satellite", "rRNA", "snRNA", "ARTEFACT", "Unknown")
-ls_no_te_trich
-
-#Creating a copy of the original file for possible further use before updating the original function for Nativa
-df_te_nat_org = df_te_nat
-
-#Creating a copy of the original file for possible further use before updating the original function for Spiralis
-df_trich_te_org = df_trich_te
+# List of non-TE elements (same list used for both species)
+ls_no_te = c("Simple_repeat", "simple_repeat", "Low_complexity", "Satellite", "rRNA", "snRNA", "ARTEFACT", "Unknown")
 
 # Updating dataset with only TEs for Nativa
 df_te_nat = df_te_nat |>
