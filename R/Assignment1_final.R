@@ -325,6 +325,8 @@ df_wilcox = bind_rows(
   mutate(p_holm = p.adjust(p.value, method = "holm"))
 
 df_wilcox
+
+#==> After Holm correction across the four comparisons, none is significant (adjusted p = 0.119 at lowest), so the T. spiralis DNA vs retro difference is a tentative trend.
       
 df_median_div = df_both_species |>
   group_by(Species, TE_type) |>
