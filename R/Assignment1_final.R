@@ -213,6 +213,9 @@ df_dense_nat$qry_id |> unique() |> length()
 df_dense_ts$qry_id |> unique() |> length()
 #=================> 186 contigs (220 had >50 repeats before non-TE removal)
 
+#=================>  The same cutoff is used for both species so the comparison is consistent.
+#=================>  Note: we haven't used FASTA files, contigs are ranked by repeat count, not by length, so "repeat dense" rather than "largest".
+
 nrow(df_te_nat)
 nrow(df_dense_nat)
 
