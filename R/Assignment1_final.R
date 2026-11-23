@@ -8,6 +8,19 @@
 ##
 ## 2026-11-02
 ##
+## Secondary contributor Adhithya Dhivakar revised code
+## Main edits made: 
+##   1. Replaced the duplicated nativa/spiralis steps with two functions,
+##      called load_te_data() and filter_dense_te(). The contig cutoff is now the
+##      min_repeats argument. Also merged the two identical non-TE
+##      lists into ls_no_te and updated the data paths to match the file
+##      names in the repository.
+##   2. Added run_wilcox() and a results table called df_wilcox that collects the
+##      four Part 2 Wilcoxon tests with Holm-adjusted p-values.
+##   3. Added a sensitivity analysis that runs the Part 2
+##      tests again at cutoffs of 20-100 repeats and a figure.
+##
+## Revised 2026-11-23
 ##***************************
 
 ## Checking if this works in Github
