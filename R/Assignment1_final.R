@@ -207,9 +207,11 @@ filter_dense_te = function(df_org, species, min_repeats = 50) {
 df_dense_nat = filter_dense_te(df_te_nat_org, "T.nativa")
 df_dense_ts  = filter_dense_te(df_trich_te_org, "T.spiralis")
 
-# Number of contigs kept in each species
+# Number of contigs kept in each species (contigs that still have TE rows after non-TE removal)
 df_dense_nat$qry_id |> unique() |> length()
+#=================> 225 contigs (268 had >50 repeats before non-TE removal)
 df_dense_ts$qry_id |> unique() |> length()
+#=================> 186 contigs (220 had >50 repeats before non-TE removal)
 
 nrow(df_te_nat)
 nrow(df_dense_nat)
