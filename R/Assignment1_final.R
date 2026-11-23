@@ -185,42 +185,30 @@ df_te_nat_org |>
 #================> the curve bends from a gentle to a steep decline at ~50
 #================> Repeats per contig (all repeat classes >>>> org tables) were sorted and plotted on a log10 scale;
 
-# To obtain from the original cvs file the contigs larger than 50 in nativa
-ls_dense_nat = df_te_nat_org |>
-  group_by(qry_id) |>
-  summarise(count = n()) |>
-  arrange(desc(count)) |>
-  filter(count > 50) |>
-  pull(qry_id)
-ls_dense_nat
+# Function: keep TEs on repeat-dense contigs and label Species and TE_type
+# df_org = the original, unfiltered table (contigs are counted before non-TEs are removed)
+filter_dense_te = function(df_org, species, min_repeats = 50) {
+  ls_dense = df_org |>
+    group_by(qry_id) |>
+    summarise(count = n()) |>
+    arrange(desc(count)) |>
+    filter(count > min_repeats) |>
+    pull(qry_id)
 
-# To obtain number of large contigs present in nativa
-ls_dense_nat |> length()
-#=================> In T.nativa there are 268 contigs
+  df_dense = df_org |>
+    filter(matching_class %notin% ls_no_te) |>
+    filter(qry_id %in% ls_dense) |>
+    mutate(Species = species,
+           TE_type = if_else(str_starts(matching_class, "DNA/|RC"), "DNA Transposons", "Retrotransposons"))
+  return(df_dense)
+}
 
-# To obtain from the original cvs file the contigs larger than 50 in Spiralis 
-ls_dense_ts = df_trich_te_org |>
-  group_by(qry_id) |>
-  summarise(count = n()) |>
-  arrange(desc(count)) |>
-  filter(count > 50) |>
-  pull(qry_id)
+df_dense_nat = filter_dense_te(df_te_nat_org, "T.nativa")
+df_dense_ts  = filter_dense_te(df_trich_te_org, "T.spiralis")
 
-# To obtain number of large contigs present in Spiralis
-ls_dense_ts |> length()
-#=================> In T.spiralis there are 220 contigs 
-
-#=================>  The same cutoff is used for both species so the comparison is consistent.
-#=================>  Note: we haven't used FASTA files, contigs are ranked by repeat count, not by length, so "repeat dense" rather than "largest".
-
-
-# Creating a new table with TE rows that are in the ls_dense for which species, so we can plot them against perc_del and perc_div
-
-df_dense_nat = df_te_nat |>
-  filter(qry_id %in% ls_dense_nat)
-
-df_dense_ts = df_trich_te |>
-  filter(qry_id %in% ls_dense_ts)
+# Number of contigs kept in each species
+df_dense_nat$qry_id |> unique() |> length()
+df_dense_ts$qry_id |> unique() |> length()
 
 nrow(df_te_nat)
 nrow(df_dense_nat)
