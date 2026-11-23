@@ -45,15 +45,12 @@ df_trich_te_org = load_te_data("../data/GCA_001447595.1.csv")
 # List of non-TE elements (same list used for both species)
 ls_no_te = c("Simple_repeat", "simple_repeat", "Low_complexity", "Satellite", "rRNA", "snRNA", "ARTEFACT", "Unknown")
 
-# Updating dataset with only TEs for Nativa
-df_te_nat = df_te_nat |>
-  filter(matching_class %notin% ls_no_te_nat)
-df_te_nat
+# Updating datasets with only TEs
+df_te_nat = df_te_nat_org |>
+  filter(matching_class %notin% ls_no_te)
 
-# Updating dataset with only TEs for Spiralis
-df_trich_te = df_trich_te |>
-  filter(matching_class %notin% ls_no_te_trich)
-df_trich_te
+df_trich_te = df_trich_te_org |>
+  filter(matching_class %notin% ls_no_te)
 
 # Making sure there are not any non-TE left in Nativa
 df_te_nat$matching_class %in% ls_no_te_nat |>
