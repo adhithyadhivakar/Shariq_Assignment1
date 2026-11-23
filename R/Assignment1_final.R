@@ -53,13 +53,13 @@ df_trich_te = df_trich_te_org |>
   filter(matching_class %notin% ls_no_te)
 
 # Making sure there are not any non-TE left in Nativa
-df_te_nat$matching_class %in% ls_no_te_nat |>
+df_te_nat$matching_class %in% ls_no_te |>
   sum()
 df_te_nat |>
-  filter(matching_class %notin% ls_no_te_nat) |> View()
+  filter(matching_class %notin% ls_no_te |> View()
 
 # Making sure there are not any non-TE left in Spiralis
-df_trich_te$matching_class %in% ls_no_te_trich |>
+df_trich_te$matching_class %in% ls_no_te |>
   sum()
 
 # To observe what are the TE elements present in Nativa
