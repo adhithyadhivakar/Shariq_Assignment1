@@ -331,7 +331,49 @@ df_wilcox
 df_median_div = df_both_species |>
   group_by(Species, TE_type) |>
   summarise(med = median(perc_div), n = n())
-      
+
+## Sensitivity analysis: do the Part 2 conclusions depend on the 50-repeat cutoff? ----
+
+# Same as run_wilcox(), but returns NA instead of an error if a group is too small at a strict cutoff
+run_wilcox_safe = function(df, group_col, label) {
+  tryCatch(run_wilcox(df, group_col, label),
+           error = function(e) tibble(comparison = label, statistic = NA_real_, p.value = NA_real_))
+}
+
+# Rebuild the combined table at one cutoff and rerun the four Part 2 comparisons
+run_cutoff = function(min_repeats) {
+  df = bind_rows(
+    filter_dense_te(df_te_nat_org, "T.nativa", min_repeats),
+    filter_dense_te(df_trich_te_org, "T.spiralis", min_repeats)
+  )
+  bind_rows(
+    run_wilcox_safe(filter(df, Species == "T.nativa"), "TE_type", "T.nativa: DNA vs Retro"),
+    run_wilcox_safe(filter(df, Species == "T.spiralis"), "TE_type", "T.spiralis: DNA vs Retro"),
+    run_wilcox_safe(filter(df, TE_type == "Retrotransposons"), "Species", "Retro: nativa vs spiralis"),
+    run_wilcox_safe(filter(df, TE_type == "DNA Transposons"), "Species", "DNA: nativa vs spiralis")
+  ) |>
+    mutate(p_holm = p.adjust(p.value, method = "holm"),
+           min_repeats = min_repeats,
+           n_TEs = nrow(df),
+           .before = 1)
+}
+
+df_sensitivity = map_dfr(c(20, 30, 50, 75, 100), run_cutoff)
+df_sensitivity
+
+# Adjusted p-values across cutoffs (dashed line = 0.05)
+df_sensitivity |>
+  ggplot(aes(x = min_repeats, y = p_holm, colour = comparison)) +
+  geom_line() +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed") +
+  labs(x = "Minimum repeats per contig (cutoff)", y = "Holm-adjusted p-value",
+       colour = "Comparison", title = "Sensitivity of TE divergence tests to the contig cutoff")
+
+ggsave("../Output/fig_cutoff_sensitivity.png", width = 10, height = 6)
+
+#==> No comparison is significant after Holm correction at any cutoff from 20 to 100 (lowest adjusted p = 0.119), so the Part 2 conclusions do not depend on the cutoff of 50. The raw p < 0.05 results at cutoff 50 do not hold at neighbouring cutoffs.
+
 #=====> Medians were calculated per species and TE type to report the size of the age difference alongside the Wilcoxon p-values, since a p-value alone shows whether groups differ, not by how much. ANd to add captions to the Boxplot.
       
 df_both_species |> filter(Species == "T.nativa") |>
