@@ -40,6 +40,7 @@ df_te_nat_org   = load_te_data("../data/GCA_001447565.2.csv")
 df_trich_te_org = load_te_data("../data/GCA_001447595.1.csv")
 
 
+
 ## Removing non-TE elements and classifying matching classes into either NA transposons or retrotransposons----
 
 # List of non-TE elements (same list used for both species)
@@ -56,7 +57,7 @@ df_trich_te = df_trich_te_org |>
 df_te_nat$matching_class %in% ls_no_te |>
   sum()
 df_te_nat |>
-  filter(matching_class %notin% ls_no_te |> View()
+  filter(matching_class %notin% ls_no_te) |> View()
 
 # Making sure there are not any non-TE left in Spiralis
 df_trich_te$matching_class %in% ls_no_te |>
