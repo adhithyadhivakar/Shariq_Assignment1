@@ -21,6 +21,7 @@ library(tidyverse)
 conflicted::conflicts_prefer(dplyr::filter())
 library(viridis)
 library(Biostrings)
+library(broom)
 # + scale_color/fill_viridis_c/d()
 theme_set(theme_light())
 
@@ -304,6 +305,26 @@ wilcox.test(perc_div ~ TE_type, data = df_both_species |> filter(Species == "T.s
 wilcox.test(perc_div ~ Species, data = df_both_species |> filter(TE_type == "Retrotransposons"))
 
 wilcox.test(perc_div ~ Species, data = df_both_species |> filter(TE_type == "DNA Transposons"))
+
+# Run a Wilcoxon test and return the result as a one-row table
+# group_col = the column to compare (e.g. "TE_type" or "Species")
+run_wilcox = function(df, group_col, label) {
+  test = wilcox.test(reformulate(group_col, response = "perc_div"), data = df)
+  tidy(test) |>
+    mutate(comparison = label) |>
+    select(comparison, statistic, p.value)
+}
+
+# Four comparisons from Part 2, collected in one table
+df_wilcox = bind_rows(
+  run_wilcox(filter(df_both_species, Species == "T.nativa"), "TE_type", "T.nativa: DNA vs Retro"),
+  run_wilcox(filter(df_both_species, Species == "T.spiralis"), "TE_type", "T.spiralis: DNA vs Retro"),
+  run_wilcox(filter(df_both_species, TE_type == "Retrotransposons"), "Species", "Retro: nativa vs spiralis"),
+  run_wilcox(filter(df_both_species, TE_type == "DNA Transposons"), "Species", "DNA: nativa vs spiralis")
+) |>
+  mutate(p_holm = p.adjust(p.value, method = "holm"))
+
+df_wilcox
       
 df_median_div = df_both_species |>
   group_by(Species, TE_type) |>
