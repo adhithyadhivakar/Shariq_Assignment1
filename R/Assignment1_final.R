@@ -218,16 +218,6 @@ nrow(df_dense_ts)
 
 #====> Dense contigs hold 823 of 1319 TEs in T.Nativa and 838 of 1037 TEs in T.Spiralis.
   
-## Creating new columns classifying contigs as either DNA Transposons or Retrotransposons and Nativa or spiralis to later create a single table to make comparisons and plotting easier ----
-
-#Adding a new column classifying contigs as either DNA Transposons or Retrotransposons in Nativa
-df_dense_nat = df_dense_nat |>
-  mutate(TE_type = if_else(str_starts(matching_class, "DNA/|RC"), "DNA Transposons", "Retrotransposons"))
-
-#Adding a new column classifying contigs as either DNA Transposons or Retrotransposons in Spiralis
-df_dense_ts = df_dense_ts |>
-  mutate(TE_type = if_else(str_starts(matching_class, "DNA/|RC"), "DNA Transposons", "Retrotransposons"))
-  
 # Identifying the amount of DNA Transposons and Retrotransposons in both Nativa and Spiralis to check values
 df_dense_nat |>
   count(TE_type)
@@ -246,12 +236,6 @@ df_dense_ts |>
   filter(TE_type == "Retrotransposons") |>
   count(matching_class)
 
-#creating a new table with both species labelled in the new column
-df_dense_nat = df_dense_nat |>
-  mutate(Species = "T.nativa")
-  
-df_dense_ts = df_dense_ts |>
-  mutate(Species = "T.spiralis")
 
 df_both_species = bind_rows(df_dense_nat, df_dense_ts)
 
