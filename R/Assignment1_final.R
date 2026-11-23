@@ -242,7 +242,7 @@ df_dense_ts |>
   filter(TE_type == "Retrotransposons") |>
   count(matching_class)
 
-
+# Combine both species into one table
 df_both_species = bind_rows(df_dense_nat, df_dense_ts)
 
 nrow(df_both_species)
